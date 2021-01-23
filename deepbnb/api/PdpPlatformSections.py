@@ -1,13 +1,16 @@
-import lxml.html
-import re
-import scrapy
+import lxml.html;
+import re;
+import scrapy;
 
-from typing import Union
-from logging import LoggerAdapter
+from typing import Union;
+from logging import LoggerAdapter;
 
-from deepbnb.api.ApiBase import ApiBase
-from deepbnb.api.PdpReviews import PdpReviews
-from deepbnb.items import DeepbnbItem
+from deepbnb.api.ApiBase import ApiBase;
+from deepbnb.api.PdpReviews import PdpReviews;
+from deepbnb.items import DeepbnbItem;
+
+# Metallicafan212: Calendar
+from deepbnb.api.PdpAvailabilityCalendar import PdpAvailabilityCalendar;
 
 
 class PdpPlatformSections(ApiBase):
@@ -29,13 +32,15 @@ class PdpPlatformSections(ApiBase):
             currency: str,
             data_cache: dict,
             geography: dict,
-            pdp_reviews: PdpReviews
+            pdp_reviews: PdpReviews,
+            pdp_calendar: PdpAvailabilityCalendar
     ):
-        super().__init__(api_key, logger, currency)
-        self.__data_cache = data_cache
-        self.__geography = geography
-        self.__regex_amenity_id = re.compile(r'^([a-z0-9]+_)+([0-9]+)_')
-        self.__pdp_reviews = pdp_reviews
+        super().__init__(api_key, logger, currency);
+        self.__data_cache = data_cache;
+        self.__geography = geography;
+        self.__regex_amenity_id = re.compile(r'^([a-z0-9]+_)+([0-9]+)_');
+        self.__pdp_reviews = pdp_reviews;
+        self.__pdp_calendar = pdp_calendar;
 
     def api_request(self, listing_id: str):
         """Generate scrapy.Request for listing page."""
@@ -159,6 +164,10 @@ class PdpPlatformSections(ApiBase):
             rating_value=logging_data['valueRating'],
             review_count=listing_data_cached['review_count'],
             reviews=self.__pdp_reviews.api_request(listing_id, 50),
+            
+            # Metallicafan212: Calendar info
+            calendar=self.__pdp_calendar.api_request(listing_id, 50),
+            
             room_and_property_type=listing_data_cached['room_and_property_type'],
             room_type=listing_data_cached['room_type'],
             room_type_category=listing_data_cached['room_type_category'],
@@ -170,6 +179,11 @@ class PdpPlatformSections(ApiBase):
             url="https://www.airbnb.com/rooms/{}".format(listing_id),
             weekly_price_factor=listing_data_cached['weekly_price_factor']
         )
+        
+        # Metallicafan212: Test
+        with open("test.txt", "w+") as f:
+            f.write(str(item));
+            f.close();
 
         self._get_detail_property(item, 'transit', 'Getting around', location['seeAllLocationDetails'], 'content')
         self._get_detail_property(item, 'interaction', 'During your stay', host_profile['hostInfos'], 'html')

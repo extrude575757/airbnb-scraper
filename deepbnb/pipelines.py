@@ -106,7 +106,7 @@ class BnbPipeline:
 
         return item
 
-
+fileIndex = 0;
 class ElasticBnbPipeline:
     def process_item(self, item, spider):
         """Insert / update items in ElasticSearch."""
@@ -158,6 +158,13 @@ class ElasticBnbPipeline:
             'transit':                item['transit'],
             'url':                    item['url'],
             'weekly_price_factor':    item['weekly_price_factor']
+            
+            
+            #with open("testFile" + str(fileIndex) + ".txt", "w+") as f:
+                #f.write(str(item));
+                #f.close();
+                
+           #fileIndex = fileIndex + 1;
         }
 
         try:
